@@ -12,8 +12,9 @@ class GameService implements Runnable{
 	private ServerSocket socketserveur ;
 	private PrintWriter msgToClient;
 	private BufferedReader msgFromClient;
-	
+
 	private boolean competEnCours = true;
+	private boolean clientConnecte = true;
 	private String state = "init";
 	
 	private Joueur joueur;
@@ -35,7 +36,7 @@ class GameService implements Runnable{
 
 	public void run(){
 		try {
-			while(competEnCours){
+			while(competEnCours && clientConnecte){
 				switch(state) {
 				case "init":
 					//mot.generer();
@@ -84,8 +85,10 @@ class GameService implements Runnable{
 			
 			}
 		}   
-		//catch (IOException e) {e.printStackTrace();}            
-		catch (Exception e) {e.printStackTrace();}
+		catch (IOException e) {e.printStackTrace();}            
+		finally {
+			clientConnecte = false;
+		}
 	}
 	
 	public String comparer(Mot mot, String motRecu) {
@@ -124,5 +127,18 @@ class GameService implements Runnable{
 
 	public String getPseudo() {
 		return joueur.getPseudo();
+	}
+	
+	public void reconnect(Socket socketjoueur) {
+		try{
+			System.out.println("Reconnecté : " + getPseudo());
+			this.msgToClient = new PrintWriter(socketjoueur.getOutputStream());
+			this.msgFromClient = new BufferedReader (new InputStreamReader (socketjoueur.getInputStream()));
+			clientConnecte = true;
+			this.run();
+		}
+			catch(IOException e){
+				e.printStackTrace();
+			}
 	}
 }

@@ -19,7 +19,7 @@ class ConnectionService implements Runnable {
 	
 	private boolean serverOn;
 	
-	private List<Thread> gameThreads;
+	private List<GameThread> gameThreads;
 	
 	public ConnectionService(ServerSocket socketserveur) {
 		this.socketserveur = socketserveur;
@@ -58,15 +58,22 @@ class ConnectionService implements Runnable {
 				}
 				
 				//ajout du joueur dans la liste
+				boolean playerFound = false;
+				for(GameThread g : gameThreads) {
+					if(g.update(nomRecu, s)) {
+						System.out.println("Found "+nomRecu+" !");
+						playerFound = true;
+						g.run();
+					}
+				}
 				
-				Thread gameThread = new Thread(new GameService(socketserveur, s, new Joueur(0, nomRecu, 0, 0, ipClient)));
-				gameThread.start();
-				gameThreads.add(gameThread);
+				if(playerFound != true) {
+					GameThread gameThread = new GameThread(new GameService(socketserveur, s, new Joueur(0, nomRecu, 0, 0, ipClient)));
+					gameThread.start();
+					gameThreads.add(gameThread);
+					nbClients++;
+				}
 				
-				
-								
-				
-				nbClients++;
 				System.out.println(nomRecu + " est connecté.");
 			}
 			else {
