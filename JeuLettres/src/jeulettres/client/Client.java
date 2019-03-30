@@ -30,6 +30,12 @@ public class Client {
 			//Message d'accueil 
 			in = new BufferedReader (new InputStreamReader (socket.getInputStream()));
 			String message_distant = in.readLine();
+			
+			if(message_distant.equals("full")) {
+				System.out.println("Serveur complet.");
+				return;
+			}
+			
 			System.out.println("serveur :"+ message_distant);        
 
 			//Envoi du pseudo

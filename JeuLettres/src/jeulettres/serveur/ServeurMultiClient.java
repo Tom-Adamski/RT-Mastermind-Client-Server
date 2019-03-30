@@ -15,7 +15,7 @@ import java.io.PrintWriter;
 
 public class ServeurMultiClient{
 	
-	static final int MAXJOUEURS = 10;
+	static final int MAXJOUEURS = 3;
 	
 	static List<Joueur> joueurs;
 
@@ -158,6 +158,8 @@ class ConnectionService implements Runnable {
 	private Socket s ;
 	private int nbClients;
 	
+	private boolean serverOn;
+	
 	private List<Thread> gameThreads;
 	
 	public ConnectionService(ServerSocket socketserveur, List<Joueur> joueurs) {
@@ -165,16 +167,18 @@ class ConnectionService implements Runnable {
 		this.joueurs = joueurs;
 		this.nbClients = 0;
 		this.gameThreads = new ArrayList<>();
+		this.serverOn = true;
 	}
 
 	@Override
 	public void run() {
 		// écoute d'un service entrant -association socket client et socket serveur.
+		while(serverOn) {
 		try {
 			
 			System.out.println("Attente de connexion");
 			
-			while(nbClients < ServeurMultiClient.MAXJOUEURS) {
+			if(nbClients < ServeurMultiClient.MAXJOUEURS) {
 				//attente de connection
 				s = socketserveur.accept(); 
 				String ipClient = s.getInetAddress().toString();
@@ -204,10 +208,19 @@ class ConnectionService implements Runnable {
 				nbClients++;
 				System.out.println(nomRecu + " est connecté.");
 			}
+			else {
+				s = socketserveur.accept(); 
+				String ipClient = s.getInetAddress().toString();
+				System.out.println(ipClient + " ne peut pas se connecter, le serveur est plein !");
+				msgToClient = new PrintWriter(s.getOutputStream());
+				msgToClient.println("full");
+				msgToClient.flush();
+			}
 		}
 		catch (IOException e) {e.printStackTrace();}            
 		catch (Exception e) {e.printStackTrace();}
 		
+	}
 	}
 	
 }
