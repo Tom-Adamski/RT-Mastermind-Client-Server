@@ -63,7 +63,8 @@ class GameService implements Runnable{
 			while(competEnCours){
 				switch(state) {
 				case "init":
-					mot.generer();
+					//mot.generer();
+					mot.selectionner();
 					msgToClient.println("init!");
 					msgToClient.flush();
 					msgToClient.println(Mot.TAILLE);
