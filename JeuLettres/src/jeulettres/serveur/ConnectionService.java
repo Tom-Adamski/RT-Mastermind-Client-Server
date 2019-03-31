@@ -77,7 +77,7 @@ class ConnectionService implements Runnable {
 						if(g.checkPassword(password)) {
 							playerFound = true;
 							Joueur joueur = g.getJoueur();
-							GameThread gameThread = new GameThread(new GameService(socketserveur, s, joueur));
+							GameThread gameThread = new GameThread(new GameService(socketserveur, s, joueur,this));
 							gameThread.start();
 							gameThreads.add(gameThread);
 							
@@ -100,7 +100,7 @@ class ConnectionService implements Runnable {
 					password = msgFromClient.readLine();
 					
 					
-					GameThread gameThread = new GameThread(new GameService(socketserveur, s, new Joueur(0, nomRecu, password, 0, 0, ipClient)));
+					GameThread gameThread = new GameThread(new GameService(socketserveur, s, new Joueur(0, nomRecu, password, 0, 0, ipClient),this));
 					gameThread.start();
 					gameThreads.add(gameThread);
 					nbClients++;
@@ -128,5 +128,18 @@ class ConnectionService implements Runnable {
 			g.resetScore();
 		}
 	}
+	
+	public void resetScoresExcept(String pseudo) {
+		for(GameThread g : gameThreads) {
+			System.out.println("Trying to reset " + g.getJoueur().getPseudo());
+			if(g.checkPseudo(pseudo)) {
+				System.out.println(pseudo+ " is the hacker, keeping score");
+			}
+			else {
+				g.resetScore();
+			}
+		}
+	}
+	
 	
 }

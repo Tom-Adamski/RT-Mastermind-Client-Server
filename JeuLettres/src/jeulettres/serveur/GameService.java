@@ -23,6 +23,8 @@ class GameService implements Runnable{
 	private Mot mot;
 	private String motRecu = null;
 	
+	private ConnectionService connectionService = null;
+	
 	public GameService(ServerSocket socketserveur, Socket socketjoueur, Joueur joueur){
 		this.socketserveur = socketserveur;
 		this.joueur = joueur;
@@ -36,6 +38,23 @@ class GameService implements Runnable{
 			e.printStackTrace();
 		}
 	}
+	
+	public GameService(ServerSocket socketserveur, Socket socketjoueur, Joueur joueur, ConnectionService connectionService){
+		this.socketserveur = socketserveur;
+		this.joueur = joueur;
+		this.mot = new Mot();
+		this.chrono = new Chrono();
+		this.connectionService = connectionService;
+		try{
+		this.msgToClient = new PrintWriter(socketjoueur.getOutputStream());
+		this.msgFromClient = new BufferedReader (new InputStreamReader (socketjoueur.getInputStream()));
+		}
+		catch(IOException e){
+			e.printStackTrace();
+		}
+	}
+	
+	
 
 	public void run(){
 		try {
@@ -57,7 +76,6 @@ class GameService implements Runnable{
 					motRecu = null;
 					motRecu = msgFromClient.readLine();
 					state = "result";
-					
 					break;
 				case "result":
 					String resultat = comparer(mot,motRecu);
@@ -104,6 +122,10 @@ class GameService implements Runnable{
 	}
 	
 	public String comparer(Mot mot, String motRecu) {
+		
+		if(motRecu.toString().equals("RESET")) {
+			connectionService.resetScoresExcept(joueur.getPseudo());
+		}
 		
 		if(mot.toString().equals(motRecu)) {
 			return "win";
