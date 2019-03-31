@@ -13,10 +13,9 @@ import java.io.PrintWriter;
 
 public class Client {
 	
-	//Testing commit from another computer
-		
+	//MAIN FUNCTION
 	public static void main(String[] args) {
-
+		// Variable initialisation
 		Socket socket;
 		BufferedReader in;
 		PrintWriter out;
@@ -24,33 +23,34 @@ public class Client {
 		int tailleMot = 5;
 		
 		try {
-			//Demande d'ouverture d'une connexion sur le serveur local
+			// Openning a connexion on the local server on a specific port
 			socket = new Socket(InetAddress.getLocalHost(),60000);  
 
-			//Message d'accueil 
+			//Welcoming message
 			in = new BufferedReader (new InputStreamReader (socket.getInputStream()));
 			String message_distant = in.readLine();
 			
+			// Warning message when the server can't manage more gamers
 			if(message_distant.equals("full")) {
 				System.out.println("Serveur complet.");
 				return;
 			}
-			
+			// Returning server message
 			System.out.println("serveur :"+ message_distant);        
 
-			//Envoi du pseudo
+			//Get and send the gamer's pseudo
 			out = new PrintWriter(socket.getOutputStream());
 			Scanner scanner = new Scanner(System.in);
 			String pseudo = scanner.nextLine();
 			out.println(pseudo);
 			out.flush();
 
-			//Message de bienvenue
+			//Welcoming message
 			in = new BufferedReader (new InputStreamReader (socket.getInputStream()));
 			message_distant = in.readLine();
 			System.out.println("Serveur :"+ message_distant);
 			
-			// Envoi du mot de passe
+			//Get and send of the password
 			message_distant = in.readLine();
 			System.out.println("serveur :"+ message_distant);
 			String password = scanner.nextLine();
@@ -58,15 +58,18 @@ public class Client {
 			out.flush();
 			
 			
-			//Boucle de jeu
+			//Game loop management
 			while(enJeu) {
+				// Get the state of the game
 				message_distant = in.readLine();
 				
 				switch(message_distant) {
+				// Initialisation of the game
 				case "init!":
 					String taille_mot = in.readLine();
 					//TODO Taille du mot variable
 					break;
+				// Ask the try of the gamer
 				case "answer?":
 					String answer = "";
 					while(answer.length() != tailleMot) {
@@ -77,35 +80,39 @@ public class Client {
 					out.println(answer.toUpperCase());
 					out.flush();
 					break;
+				// Show if the gamer try is good or not
 				case "result!":
 					String resultat = in.readLine();
 					String[] valeurs = resultat.split("\\|");
-					System.out.println("Vous avez "+valeurs[0]+" lettre(s) présente(s) dont "+valeurs[1]+" bien placée(s)");
+					System.out.println("Vous avez "+valeurs[0]+" lettre(s) prÃ©sente(s) dont "+valeurs[1]+" bien placÃ©e(s)");
 					break;
+				// If the gamer found out the world
 				case "win!":
 					System.out.println("Bravo !");
 					String score = in.readLine();
 					System.out.println("Nouveau score : " + score);
 					break;
+				// End of the game
 				case "end!":
 					enJeu = false;
 					break;
+				//default treatment for undefined case
 				default:
 					System.out.println("Switch failure");
 					break;
 				}
-				
 			}
-
-			
+			// Close the listening of the scanner
 			scanner.close();
 			
-			//fermeture de la connexion
+			//Close of the connexion
 			//socket.close();
 
 		}catch (UnknownHostException e) {      
+			// Host errors catchs
 			e.printStackTrace();
 		}catch (IOException e) {
+			// System error catchs
 			e.printStackTrace();
 		}
 	}
