@@ -17,6 +17,8 @@ class GameService implements Runnable{
 	private boolean clientConnecte = true;
 	private String state = "init";
 	
+	private Chrono chrono;
+	
 	private Joueur joueur;
 	private Mot mot;
 	private String motRecu = null;
@@ -25,6 +27,7 @@ class GameService implements Runnable{
 		this.socketserveur = socketserveur;
 		this.joueur = joueur;
 		this.mot = new Mot();
+		this.chrono = new Chrono();
 		try{
 		this.msgToClient = new PrintWriter(socketjoueur.getOutputStream());
 		this.msgFromClient = new BufferedReader (new InputStreamReader (socketjoueur.getInputStream()));
@@ -45,6 +48,7 @@ class GameService implements Runnable{
 					msgToClient.flush();
 					msgToClient.println(Mot.TAILLE);
 					msgToClient.flush();
+					chrono.start();
 					state = "game";
 					break;
 				case "game":
@@ -72,7 +76,15 @@ class GameService implements Runnable{
 				case "win":
 					msgToClient.println("win!");
 					msgToClient.flush();
-					joueur.ajouterPoints(10);
+					long seconds = chrono.getElapsedTime();
+					if(seconds < 60)
+						joueur.ajouterPoints(10);
+					else if(seconds < 180) 
+						joueur.ajouterPoints(5);
+					else if(seconds < 300)
+						joueur.ajouterPoints(2);
+					else
+						joueur.ajouterPoints(1);
 					msgToClient.println(joueur.getScore());
 					msgToClient.flush();
 					state = "init";
