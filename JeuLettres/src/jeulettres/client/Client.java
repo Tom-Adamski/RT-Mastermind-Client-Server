@@ -106,7 +106,7 @@ public class Client {
 			scanner.close();
 			
 			//Close of the connexion
-			//socket.close();
+			socket.close();
 
 		}catch (UnknownHostException e) {      
 			// Host errors catchs
