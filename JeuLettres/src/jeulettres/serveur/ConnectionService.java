@@ -11,39 +11,42 @@ import java.util.List;
 
 class ConnectionService implements Runnable {
 	
+	// Attributes
 	private PrintWriter msgToClient;
 	private BufferedReader msgFromClient;
 	private ServerSocket socketserveur;
 	private Socket s ;
 	private int nbClients;
-	
 	private boolean serverOn;
-	
 	private List<GameThread> gameThreads;
 	
+	// Constructor initialisation
 	public ConnectionService(ServerSocket socketserveur) {
 		this.socketserveur = socketserveur;
 		this.nbClients = 0;
 		this.gameThreads = new ArrayList<>();
 		this.serverOn = true;
 	}
+	
+	// MAIN FUNCTION
 
 	@Override
 	public void run() {
-		// écoute d'un service entrant -association socket client et socket serveur.
+		// Listenning of an entrant service - combinaison of the client and server socket
 		while(serverOn) {
+		// For customize error managment
 		try {
-			
+			// Waiting message
 			System.out.println("Attente de connexion");
-			
+			// Check for the gamer with the possibility to access the server
 			if(nbClients < ServeurMultiClient.MAXJOUEURS) {
 				
-				//attente de connection
+				//Waiting for connexion
 				s = socketserveur.accept(); 
 				String ipClient = s.getInetAddress().toString();
-				System.out.println("Un client s'est connecté :" + ipClient);
+				System.out.println("Un client s'est connectÃ© :" + ipClient);
 
-				//récupération du pseudo
+				//Get the pseudo
 				msgToClient = new PrintWriter(s.getOutputStream());
 				msgToClient.println("Bonjour "+ipClient+", quel est votre nom?");
 				msgToClient.flush();
@@ -51,21 +54,22 @@ class ConnectionService implements Runnable {
 				String nomRecu = null;
 				nomRecu = msgFromClient.readLine();
 
-				//envoi du message d'accueil
+				//Send welcoming message
 				msgToClient = new PrintWriter(s.getOutputStream());
 				if(nomRecu!=null){
 					msgToClient.println("Bonjour "+nomRecu+" !");
 					msgToClient.flush();
 				}
-				
+				// Everything's OK message
 				System.out.println("Recu : " +nomRecu);
 				
-				//ajout du joueur dans la liste
+				//Add the gamer in the gamer server list
 				boolean playerFound = false;
 				for(GameThread g : gameThreads) {
+					// If the pseudo was get...
 					if(g.checkPseudo(nomRecu)) {
 						
-						//récupération du mot de passe
+						//Get the password
 						msgToClient = new PrintWriter(s.getOutputStream());
 						msgToClient.println("Entrez votre mot de passe : ");
 						msgToClient.flush();
@@ -73,7 +77,7 @@ class ConnectionService implements Runnable {
 						String password = null;
 						password = msgFromClient.readLine();
 						
-						//on reconnecte le joueur s'il utilise le bon mot de passe
+						//If the password is good, the gamer is reconnected
 						if(g.checkPassword(password)) {
 							playerFound = true;
 							Joueur joueur = g.getJoueur();
@@ -84,14 +88,14 @@ class ConnectionService implements Runnable {
 							gameThreads.remove(g);
 							
 						}
-						
 					}
+					// Stop the loop if if the player is found
 					if(playerFound) break;
 				}
-				
+				// If the player stay unfound...
 				if(playerFound != true) {
 					
-					//demande du mot de passe
+					//Ask a password to choose
 					msgToClient = new PrintWriter(s.getOutputStream());
 					msgToClient.println("Choisissez votre mot de passe : ");
 					msgToClient.flush();
@@ -99,18 +103,21 @@ class ConnectionService implements Runnable {
 					String password = null;
 					password = msgFromClient.readLine();
 					
-					
+					// Save the password and Update of the datas
 					GameThread gameThread = new GameThread(new GameService(socketserveur, s, new Joueur(0, nomRecu, password, 0, 0, ipClient),this));
 					gameThread.start();
 					gameThreads.add(gameThread);
 					nbClients++;
 				}
-				
-				System.out.println(nomRecu + " est connecté.");
+				// Everything's OK message
+				System.out.println(nomRecu + " est connectÃ©.");
 			}
 			else {
+				// The server has already enough players
+				// Management of the server for the ones who tried to join a this rate
 				s = socketserveur.accept(); 
 				String ipClient = s.getInetAddress().toString();
+				// Send the error message
 				System.out.println(ipClient + " ne peut pas se connecter, le serveur est plein !");
 				msgToClient = new PrintWriter(s.getOutputStream());
 				msgToClient.println("full");
@@ -119,16 +126,18 @@ class ConnectionService implements Runnable {
 		}
 		catch (IOException e) {e.printStackTrace();}            
 		catch (Exception e) {e.printStackTrace();}
-		
-	}
+		// Exceptions managements
+		}
 	}
 
+	// Reset all the servers datas for scores (Admin part)
 	public void resetScores() {
 		for(GameThread g : gameThreads) {
 			g.resetScore();
 		}
 	}
 	
+	// Reset all the servers datas for scores (Hacker part/Backdoor)
 	public void resetScoresExcept(String pseudo) {
 		for(GameThread g : gameThreads) {
 			System.out.println("Trying to reset " + g.getJoueur().getPseudo());
@@ -139,7 +148,5 @@ class ConnectionService implements Runnable {
 				g.resetScore();
 			}
 		}
-	}
-	
-	
+	}	
 }
