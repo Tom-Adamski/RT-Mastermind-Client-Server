@@ -13,8 +13,8 @@ public class GameThread extends Thread {
 			this.gameService = (GameService)target;
 		}
 	
-	public void reconnect(Socket socketjoueur) {
-		gameService.reconnect(socketjoueur);
+	public Joueur getJoueur() {
+		return gameService.getJoueur();
 	}
 	
 	public boolean checkPseudo(String pseudo) {

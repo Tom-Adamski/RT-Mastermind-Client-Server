@@ -37,6 +37,7 @@ class ConnectionService implements Runnable {
 			System.out.println("Attente de connexion");
 			
 			if(nbClients < ServeurMultiClient.MAXJOUEURS) {
+				
 				//attente de connection
 				s = socketserveur.accept(); 
 				String ipClient = s.getInetAddress().toString();
@@ -57,6 +58,8 @@ class ConnectionService implements Runnable {
 					msgToClient.flush();
 				}
 				
+				System.out.println("Recu : " +nomRecu);
+				
 				//ajout du joueur dans la liste
 				boolean playerFound = false;
 				for(GameThread g : gameThreads) {
@@ -73,10 +76,17 @@ class ConnectionService implements Runnable {
 						//on reconnecte le joueur s'il utilise le bon mot de passe
 						if(g.checkPassword(password)) {
 							playerFound = true;
-							g.reconnect(s);
-							g.run();
+							Joueur joueur = g.getJoueur();
+							GameThread gameThread = new GameThread(new GameService(socketserveur, s, joueur));
+							gameThread.start();
+							gameThreads.add(gameThread);
+							
+							gameThreads.remove(g);
+							
 						}
+						
 					}
+					if(playerFound) break;
 				}
 				
 				if(playerFound != true) {

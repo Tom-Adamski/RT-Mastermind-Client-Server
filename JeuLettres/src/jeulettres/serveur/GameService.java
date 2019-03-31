@@ -145,13 +145,18 @@ class GameService implements Runnable{
 		return joueur.getPassword();
 	}
 	
+	public Joueur getJoueur() {
+		return joueur;
+	}
+	
 	public void reconnect(Socket socketjoueur) {
 		try{
 			System.out.println("Reconnecté : " + getPseudo());
 			this.msgToClient = new PrintWriter(socketjoueur.getOutputStream());
 			this.msgFromClient = new BufferedReader (new InputStreamReader (socketjoueur.getInputStream()));
 			clientConnecte = true;
-			this.run();
+			//this.run();
+			
 		}
 			catch(IOException e){
 				e.printStackTrace();
