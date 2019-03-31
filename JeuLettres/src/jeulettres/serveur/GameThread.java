@@ -30,5 +30,9 @@ public class GameThread extends Thread {
 		}
 		return false;
 	}
+	
+	public void resetScore() {
+		gameService.resetScore();
+	}
 
 }

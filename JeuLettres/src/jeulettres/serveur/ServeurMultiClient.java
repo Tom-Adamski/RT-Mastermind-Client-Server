@@ -5,6 +5,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Scanner;
 import java.net.Socket;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -25,8 +26,24 @@ public class ServeurMultiClient{
 		
 		try {
 			socketserveur = new ServerSocket(60000);
-			Thread connectionThread = new Thread(new ConnectionService(socketserveur));
+			ConnectionService connectionService = new ConnectionService(socketserveur);
+			Thread connectionThread = new Thread(connectionService);
 			connectionThread.start();
+			
+
+			Scanner scanner = new Scanner(System.in);
+			String line = "";
+			
+			while(!line.equals("stop")) {
+				line = scanner.nextLine();
+				
+				if(line.equals("reset")) {
+					connectionService.resetScores();
+					System.out.println("Les scores ont été réinitialisés");
+				}
+				
+			}
+			
 			
 		} catch (IOException e) {e.printStackTrace();}
 	}

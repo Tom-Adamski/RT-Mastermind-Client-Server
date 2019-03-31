@@ -162,4 +162,9 @@ class GameService implements Runnable{
 				e.printStackTrace();
 			}
 	}
+	
+	public void resetScore() {
+		joueur.setScore(0);
+	}
+	
 }

@@ -122,5 +122,11 @@ class ConnectionService implements Runnable {
 		
 	}
 	}
+
+	public void resetScores() {
+		for(GameThread g : gameThreads) {
+			g.resetScore();
+		}
+	}
 	
 }
