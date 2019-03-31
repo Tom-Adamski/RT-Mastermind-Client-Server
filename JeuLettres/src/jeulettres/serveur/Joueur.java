@@ -5,16 +5,18 @@ public class Joueur {
 	
 	private int codeLicencie;
 	private String pseudo;
+	private String password;
 	private int fidelite;
 	private int score;
 	private String ip;
 	
 	
 		
-	public Joueur(int codeLicencie, String pseudo, int fidelite, int score, String ip) {
+	public Joueur(int codeLicencie, String pseudo, String password, int fidelite, int score, String ip) {
 		super();
 		this.codeLicencie = codeLicencie;
 		this.pseudo = pseudo;
+		this.password = password;
 		this.fidelite = fidelite;
 		this.score = score;
 		this.ip = ip;
@@ -50,9 +52,17 @@ public class Joueur {
 	public void ajouterPoints(int points) {
 		this.score += points;
 	}
-
-	
-	
-	
+	public String getPassword() {
+		return password;
+	}
+	public void setPassword(String password) {
+		this.password = password;
+	}
+	public String getIp() {
+		return ip;
+	}
+	public void setIp(String ip) {
+		this.ip = ip;
+	}
 
 }

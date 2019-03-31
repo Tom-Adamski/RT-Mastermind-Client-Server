@@ -15,7 +15,7 @@ import java.io.PrintWriter;
 
 public class ServeurMultiClient{
 	
-	static final int MAXJOUEURS = 3;
+	static final int MAXJOUEURS = 10;
 	
 	static List<Joueur> joueurs;
 

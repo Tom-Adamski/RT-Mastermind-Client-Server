@@ -13,9 +13,19 @@ public class GameThread extends Thread {
 			this.gameService = (GameService)target;
 		}
 	
-	public boolean update(String name, Socket s) {
-		if(gameService.getPseudo().equals(name)) {
-			gameService.reconnect(s);
+	public void reconnect(Socket socketjoueur) {
+		gameService.reconnect(socketjoueur);
+	}
+	
+	public boolean checkPseudo(String pseudo) {
+		if(gameService.getPseudo().equals(pseudo)) {
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean checkPassword(String password) {
+		if(gameService.getPassword().equals(password)) {
 			return true;
 		}
 		return false;

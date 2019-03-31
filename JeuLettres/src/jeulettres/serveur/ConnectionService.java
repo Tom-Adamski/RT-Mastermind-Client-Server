@@ -60,15 +60,37 @@ class ConnectionService implements Runnable {
 				//ajout du joueur dans la liste
 				boolean playerFound = false;
 				for(GameThread g : gameThreads) {
-					if(g.update(nomRecu, s)) {
-						System.out.println("Found "+nomRecu+" !");
-						playerFound = true;
-						g.run();
+					if(g.checkPseudo(nomRecu)) {
+						
+						//récupération du mot de passe
+						msgToClient = new PrintWriter(s.getOutputStream());
+						msgToClient.println("Entrez votre mot de passe : ");
+						msgToClient.flush();
+						msgFromClient = new BufferedReader (new InputStreamReader (s.getInputStream()));
+						String password = null;
+						password = msgFromClient.readLine();
+						
+						//on reconnecte le joueur s'il utilise le bon mot de passe
+						if(g.checkPassword(password)) {
+							playerFound = true;
+							g.reconnect(s);
+							g.run();
+						}
 					}
 				}
 				
 				if(playerFound != true) {
-					GameThread gameThread = new GameThread(new GameService(socketserveur, s, new Joueur(0, nomRecu, 0, 0, ipClient)));
+					
+					//demande du mot de passe
+					msgToClient = new PrintWriter(s.getOutputStream());
+					msgToClient.println("Choisissez votre mot de passe : ");
+					msgToClient.flush();
+					msgFromClient = new BufferedReader (new InputStreamReader (s.getInputStream()));
+					String password = null;
+					password = msgFromClient.readLine();
+					
+					
+					GameThread gameThread = new GameThread(new GameService(socketserveur, s, new Joueur(0, nomRecu, password, 0, 0, ipClient)));
 					gameThread.start();
 					gameThreads.add(gameThread);
 					nbClients++;

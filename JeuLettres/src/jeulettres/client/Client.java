@@ -50,6 +50,14 @@ public class Client {
 			message_distant = in.readLine();
 			System.out.println("Serveur :"+ message_distant);
 			
+			// Envoi du mot de passe
+			message_distant = in.readLine();
+			System.out.println("serveur :"+ message_distant);
+			String password = scanner.nextLine();
+			out.println(password);
+			out.flush();
+			
+			
 			//Boucle de jeu
 			while(enJeu) {
 				message_distant = in.readLine();

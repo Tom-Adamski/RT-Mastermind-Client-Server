@@ -141,6 +141,10 @@ class GameService implements Runnable{
 		return joueur.getPseudo();
 	}
 	
+	public String getPassword() {
+		return joueur.getPassword();
+	}
+	
 	public void reconnect(Socket socketjoueur) {
 		try{
 			System.out.println("Reconnecté : " + getPseudo());
