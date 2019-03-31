@@ -25,7 +25,7 @@ public class Mot {
 		this.sequence = "";
 		this.dictionnaire = new ArrayList<String>();
 
-		String alphabet = "abcdefghijklmnopqrstuvwxyz";
+		String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 		
 		for(int i=0; i<TAILLE; i++){
 			int l = (int)Math.floor(Math.random() * 26);
@@ -62,7 +62,7 @@ public class Mot {
 			int Min = 0;
 			int nbrRandom = Min + (int)(Math.random() * ((compteur_mots - Min))); // entre 0 et longueur de liste
 		
-			this.sequence = this.dictionnaire.get(nbrRandom).toString();
+			this.sequence = this.dictionnaire.get(nbrRandom).toString().toUpperCase();
 
 	     	// Fermeture de la ressource de fichier
 			lecteur.close();

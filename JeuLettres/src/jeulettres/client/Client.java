@@ -74,7 +74,7 @@ public class Client {
 						answer = scanner.nextLine();
 					}
 					
-					out.println(answer.toLowerCase());
+					out.println(answer.toUpperCase());
 					out.flush();
 					break;
 				case "result!":
